@@ -146,7 +146,7 @@ class yafObject(object):
             for m in mat.texture_slots:
                 if m is None:
                     continue
-                if m.texture_coordinates == 'ORCO':
+                if m.texture.yaf_texture_coordinates == 'ORCO':
                     hasOrco = True
                     break
             if hasOrco:
@@ -165,7 +165,7 @@ class yafObject(object):
             for i in range(3):
                 delta.append(bbMax[i] - bbMin[i])
                 if delta[i] < 0.0001: delta[i] = 1
-            for v in mesh.verts:
+            for v in mesh.vertices:
                 normCo = []
                 vert_count = vert_count + 1
                 for i in range(3):
@@ -183,17 +183,17 @@ class yafObject(object):
         ''' count triangles '''
         count = 0
         for face in mesh.faces:
-            if len(face.verts) == 4:
+            if len(face.vertices) == 4:
                 count += 2
             else:
                 count += 1
             
             
-        self.yi.startTriMesh(ID, len(mesh.verts), len(mesh.faces) , hasOrco, hasUV, obType)
+        self.yi.startTriMesh(ID, len(mesh.vertices), len(mesh.faces) , hasOrco, hasUV, obType)
         #print("The name of id is : " + str(ID) )
             
         ind = 0
-        for v in mesh.verts:
+        for v in mesh.vertices:
             if hasOrco:
                 self.yi.addVertex(v.co[0], v.co[1], v.co[2],ov[ind][0], ov[ind][1], ov[ind][2] )
                 ind +=  1
@@ -205,7 +205,7 @@ class yafObject(object):
         #ymat = None
 
         for index,f in enumerate(mesh.faces):
-            if f.smooth == True:
+            if f.use_smooth == True:
                 isSmooth = True
                 
             
@@ -229,7 +229,7 @@ class yafObject(object):
             #    fmat = ymat
                 
                 
-            if mesh.active_uv_texture is not None :
+            if mesh.uv_texture_stencil is not None :
                 co = mesh.active_uv_texture.data[index]
                 hasUV = True
             
@@ -237,22 +237,22 @@ class yafObject(object):
                 uv0 = yi.addUV(co.uv1[0], co.uv1[1])
                 uv1 = yi.addUV(co.uv2[0], co.uv2[1])
                 uv2 = yi.addUV(co.uv3[0], co.uv3[1])
-                yi.addTriangle(f.verts[0], f.verts[1], f.verts[2], uv0, uv1, uv2, ymat)
+                yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2], uv0, uv1, uv2, ymat)
                 #print("with uv case 1")
             
             else:
-                self.yi.addTriangle(f.verts[0], f.verts[1], f.verts[2],fmat)
+                self.yi.addTriangle(f.vertices[0], f.vertices[1], f.vertices[2],fmat)
                 #print("without uv case 1")
                 
             #print("trying to locate error " + str(index))
         
-            if len(f.verts) == 4:
+            if len(f.vertices) == 4:
                 if hasUV == True and (co is not None):
                     uv3 = yi.addUV(co.uv4[0], co.uv4[1])
-                    yi.addTriangle(f.verts[2], f.verts[3], f.verts[0], uv2, uv3, uv0, ymat)
+                    yi.addTriangle(f.vertices[2], f.vertices[3], f.vertices[0], uv2, uv3, uv0, ymat)
                     #print("with uv case 2")
                 else:
-                    self.yi.addTriangle(f.verts[2], f.verts[3], f.verts[0],fmat)
+                    self.yi.addTriangle(f.vertices[2], f.vertices[3], f.vertices[0],fmat)
                     #print("without uv case 2")
                     
         self.yi.endTriMesh()
@@ -357,7 +357,7 @@ class yafObject(object):
             self.writeVolumeObject(yi, scene, obj, ID, ymaterial)
             #self.writeMesh(yi, scene, obj, ID, ymaterial)
             
-        elif obj.active_particle_system is not None:
+        elif obj.particle_systems.active is not None:
             self.writeParticlesObject(yi, scene, obj, ID)
             
         else:
@@ -487,7 +487,7 @@ class yafObject(object):
         min = [1e10, 1e10, 1e10]
         max = [-1e10, -1e10, -1e10]
         vertLoc =[]
-        for v in mesh.verts:
+        for v in mesh.vertices:
             #print("Scanning vertices ... ")
             vertLoc.append(v.co[0])
             vertLoc.append(v.co[1])

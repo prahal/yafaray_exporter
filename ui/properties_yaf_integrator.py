@@ -1,16 +1,7 @@
 import bpy
+from bpy.props import *
 
-
-FloatProperty = bpy.types.Scene.FloatProperty
-IntProperty = bpy.types.Scene.IntProperty
-BoolProperty = bpy.types.Scene.BoolProperty
-CollectionProperty = bpy.types.Scene.CollectionProperty
-EnumProperty = bpy.types.Scene.EnumProperty
-FloatVectorProperty = bpy.types.Scene.FloatVectorProperty
-IntVectorProperty = bpy.types.Scene.IntVectorProperty
-
-
-EnumProperty(attr="intg_light_method",
+bpy.types.Scene.intg_light_method = bpy.props.EnumProperty(attr="intg_light_method",
 	items = (
 		("Lighting Methods","Lighting Methods",""),
 		("Direct Lighting","Direct Lighting",""),
@@ -19,25 +10,25 @@ EnumProperty(attr="intg_light_method",
 		("Debug","Debug",""),
 		("Bidirectional","Bidirectional",""),
 ),default="Direct Lighting")
-BoolProperty(attr="intg_use_caustics")
-IntProperty(attr="intg_photons", default = 500000)
-IntProperty(attr="intg_caustic_mix", default = 100)
-IntProperty(attr="intg_caustic_depth", default = 10)
-FloatProperty(attr="intg_caustic_radius", default = 1.0)
-BoolProperty(attr="intg_use_AO")
-IntProperty(attr="intg_AO_samples", default = 32)
-FloatProperty(attr="intg_AO_distance", default = 1.0)
-FloatVectorProperty(attr="intg_AO_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
-IntProperty(attr="intg_bounces", min = 4, default = 4, soft_min = 4)
-FloatProperty(attr="intg_diffuse_radius", default = 1.0)
-IntProperty(attr="intg_cPhotons", default = 500000)
-IntProperty(attr="intg_search", default = 100)
-BoolProperty(attr="intg_final_gather", default = True)
-IntProperty(attr="intg_fg_bounces", default = 3)
-IntProperty(attr="intg_fg_samples", default = 16)
-BoolProperty(attr="intg_show_map")
-BoolProperty(attr="intg_use_bg")
-EnumProperty(attr="intg_caustic_method",
+bpy.types.Scene.intg_use_caustics = bpy.props.BoolProperty(attr="intg_use_caustics")
+bpy.types.Scene.intg_photons = bpy.props.IntProperty(attr="intg_photons", default = 500000)
+bpy.types.Scene.intg_caustic_mix = bpy.props.IntProperty(attr="intg_caustic_mix", default = 100)
+bpy.types.Scene.intg_caustic_depth = bpy.props.IntProperty(attr="intg_caustic_depth", default = 10)
+bpy.types.Scene.intg_caustic_radius = bpy.props.FloatProperty(attr="intg_caustic_radius", default = 1.0)
+bpy.types.Scene.intg_use_AO = bpy.props.BoolProperty(attr="intg_use_AO")
+bpy.types.Scene.intg_AO_samples = bpy.props.IntProperty(attr="intg_AO_samples", default = 32)
+bpy.types.Scene.intg_AO_distance = bpy.props.FloatProperty(attr="intg_AO_distance", default = 1.0)
+bpy.types.Scene.intg_AO_color = bpy.props.FloatVectorProperty(attr="intg_AO_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+bpy.types.Scene.intg_bounces = bpy.props.IntProperty(attr="intg_bounces", min = 4, default = 4, soft_min = 4)
+bpy.types.Scene.intg_diffuse_radius = bpy.props.FloatProperty(attr="intg_diffuse_radius", default = 1.0)
+bpy.types.Scene.intg_cPhotons = bpy.props.IntProperty(attr="intg_cPhotons", default = 500000)
+bpy.types.Scene.intg_search = bpy.props.IntProperty(attr="intg_search", default = 100)
+bpy.types.Scene.intg_final_gather = bpy.props.BoolProperty(attr="intg_final_gather", default = True)
+bpy.types.Scene.intg_fg_bounces = bpy.props.IntProperty(attr="intg_fg_bounces", default = 3)
+bpy.types.Scene.intg_fg_samples = bpy.props.IntProperty(attr="intg_fg_samples", default = 16)
+bpy.types.Scene.intg_show_map = bpy.props.BoolProperty(attr="intg_show_map")
+bpy.types.Scene.intg_use_bg = bpy.props.BoolProperty(attr="intg_use_bg")
+bpy.types.Scene.intg_caustic_method = bpy.props.EnumProperty(attr="intg_caustic_method",
 	items = (
 		("Caustic Method","Caustic Method",""),
 		("None","None",""),
@@ -45,9 +36,9 @@ EnumProperty(attr="intg_caustic_method",
 		("Path+Photon","Path+Photon",""),
 		("Photon","Photon",""),
 ),default="None")
-IntProperty(attr="intg_path_samples", default = 32)
-BoolProperty(attr="intg_no_recursion")
-EnumProperty(attr="intg_debug_type",
+bpy.types.Scene.intg_path_samples = bpy.props.IntProperty(attr="intg_path_samples", default = 32)
+bpy.types.Scene.intg_no_recursion = bpy.props.BoolProperty(attr="intg_no_recursion")
+bpy.types.Scene.intg_debug_type = bpy.props.EnumProperty(attr="intg_debug_type",
 	items = (
 		("Debug Type","Debug Type",""),
 		("N","N",""),
@@ -58,7 +49,7 @@ EnumProperty(attr="intg_debug_type",
 		("dSdU","dSdU",""),
 		("dSdV","dSdV",""),
 ),default="dSdV")
-BoolProperty(attr="intg_show_perturbed_normals")
+bpy.types.Scene.intg_show_perturbed_normals = bpy.props.BoolProperty(attr="intg_show_perturbed_normals")
 
 
 class YAF_PT_render(bpy.types.Panel):
@@ -69,7 +60,7 @@ class YAF_PT_render(bpy.types.Panel):
 	bl_context = 'render'
 	COMPAT_ENGINES =['YAFA_RENDER']
 
-
+	@classmethod
 	def poll(self, context):
 
 		engine = context.scene.render.engine
@@ -154,16 +145,10 @@ classes = [
 ]
 
 def register():
-	register = bpy.types.register
-	for cls in classes:
-		register(cls)
-
+	pass
 
 def unregister():
-	unregister = bpy.types.unregister
-	for cls in classes:
-		unregister(cls)
-
+	pass
 
 if __name__ == "__main__":
 	register()

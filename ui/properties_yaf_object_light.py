@@ -1,29 +1,19 @@
 import bpy
+from bpy.props import *
 
-
-FloatProperty = bpy.types.Object.FloatProperty
-IntProperty = bpy.types.Object.IntProperty
-BoolProperty = bpy.types.Object.BoolProperty
-CollectionProperty = bpy.types.Object.CollectionProperty
-EnumProperty = bpy.types.Object.EnumProperty
-FloatVectorProperty = bpy.types.Object.FloatVectorProperty
-StringProperty = bpy.types.Object.StringProperty
-IntVectorProperty = bpy.types.Object.IntVectorProperty
-
-
-BoolProperty(attr="ml_enable")
-FloatVectorProperty(attr="ml_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
-FloatProperty(attr="ml_power")
-IntProperty(attr="ml_samples")
-BoolProperty(attr="ml_double_sided")
-BoolProperty(attr="bgp_enable")
-FloatProperty(attr="bgp_power")
-IntProperty(attr="bgp_samples")
-BoolProperty(attr="bgp_with_caustic")
-BoolProperty(attr="bgp_with_diffuse")
-BoolProperty(attr="bgp_photon_only")
-BoolProperty(attr="vol_enable")
-EnumProperty(attr="vol_region",
+bpy.types.Object.ml_enable = bpy.props.BoolProperty(attr="ml_enable")
+bpy.types.Object.ml_color = bpy.props.FloatVectorProperty(attr="ml_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+bpy.types.Object.ml_power = bpy.props.FloatProperty(attr="ml_power")
+bpy.types.Object.ml_samples = bpy.props.IntProperty(attr="ml_samples")
+bpy.types.Object.ml_double_sided = bpy.props.BoolProperty(attr="ml_double_sided")
+bpy.types.Object.bgp_enable = bpy.props.BoolProperty(attr="bgp_enable")
+bpy.types.Object.bgp_power = bpy.props.FloatProperty(attr="bgp_power")
+bpy.types.Object.bgp_samples = bpy.props.IntProperty(attr="bgp_samples")
+bpy.types.Object.bgp_with_caustic = bpy.props.BoolProperty(attr="bgp_with_caustic")
+bpy.types.Object.bgp_with_diffuse = bpy.props.BoolProperty(attr="bgp_with_diffuse")
+bpy.types.Object.bgp_photon_only = bpy.props.BoolProperty(attr="bgp_photon_only")
+bpy.types.Object.vol_enable = bpy.props.BoolProperty(attr="vol_enable")
+bpy.types.Object.vol_region = bpy.props.EnumProperty(attr="vol_region",
 	items = (
 		("Volume Region","Volume Region",""),
 		("ExpDensity Volume","ExpDensity Volume",""),
@@ -32,15 +22,15 @@ EnumProperty(attr="vol_region",
 		#("Grid Volume","Grid Volume",""),
 		("Sky Volume","Sky Volume",""),
 ),default="Uniform Volume")
-FloatProperty(attr="vol_height")
-FloatProperty(attr="vol_steepness")
-FloatProperty(attr="vol_sharpness")
-FloatProperty(attr="vol_cover")
-FloatProperty(attr="vol_density")
-FloatProperty(attr="vol_absorp")
-FloatProperty(attr="vol_scatter")
-FloatProperty(attr="vol_l_e", default = 0.0, min = -1.0, max = 1.0, soft_min = -1.0, soft_max = 1.0)
-FloatProperty(attr="vol_g", default = 0.0, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+bpy.types.Object.vol_height = bpy.props.FloatProperty(attr="vol_height")
+bpy.types.Object.vol_steepness = bpy.props.FloatProperty(attr="vol_steepness")
+bpy.types.Object.vol_sharpness = bpy.props.FloatProperty(attr="vol_sharpness")
+bpy.types.Object.vol_cover = bpy.props.FloatProperty(attr="vol_cover")
+bpy.types.Object.vol_density = bpy.props.FloatProperty(attr="vol_density")
+bpy.types.Object.vol_absorp = bpy.props.FloatProperty(attr="vol_absorp")
+bpy.types.Object.vol_scatter = bpy.props.FloatProperty(attr="vol_scatter")
+bpy.types.Object.vol_l_e = bpy.props.FloatProperty(attr="vol_l_e", default = 0.0, min = -1.0, max = 1.0, soft_min = -1.0, soft_max = 1.0)
+bpy.types.Object.vol_g = bpy.props.FloatProperty(attr="vol_g", default = 0.0, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
 
 #volume Integrator
 #EnumProperty(attr="v_int_type",
@@ -66,7 +56,7 @@ class YAF_PT_object_light(bpy.types.Panel):
 	bl_context = 'object'
 	COMPAT_ENGINES =['YAFA_RENDER']
 
-
+	@classmethod
 	def poll(self, context):
 
 		engine = context.scene.render.engine
@@ -158,16 +148,10 @@ classes = [
 ]
 
 def register():
-	register = bpy.types.register
-	for cls in classes:
-		register(cls)
-
+	pass
 
 def unregister():
-	unregister = bpy.types.unregister
-	for cls in classes:
-		unregister(cls)
-
+	pass
 
 if __name__ == "__main__":
 	register()

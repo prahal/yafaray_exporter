@@ -1,17 +1,7 @@
 import bpy
+from bpy.props import *
 
-
-FloatProperty = bpy.types.Lamp.FloatProperty
-IntProperty = bpy.types.Lamp.IntProperty
-BoolProperty = bpy.types.Lamp.BoolProperty
-CollectionProperty = bpy.types.Lamp.CollectionProperty
-EnumProperty = bpy.types.Lamp.EnumProperty
-FloatVectorProperty = bpy.types.Lamp.FloatVectorProperty
-StringProperty = bpy.types.Lamp.StringProperty
-IntVectorProperty = bpy.types.Lamp.IntVectorProperty
-
-
-EnumProperty(attr="lamp_type",
+bpy.types.Lamp.lamp_type = bpy.props.EnumProperty(attr="lamp_type",
 	items = (
 		("Light Type","Light Type",""),
 		("Area","Area",""),
@@ -23,18 +13,18 @@ EnumProperty(attr="lamp_type",
 		("Sun","Sun",""),
 		("IES","IES",""),
 ),default="Sun")
-BoolProperty(attr="create_geometry")
-BoolProperty(attr="infinite")
-BoolProperty(attr="spot_soft_shadows")
-FloatProperty(attr="shadow_fuzzyness", default = 1.0)
-BoolProperty(attr="photon_only")
-IntProperty(attr="angle",
+bpy.types.Lamp.create_geometry = bpy.props.BoolProperty(attr="create_geometry")
+bpy.types.Lamp.infinite = bpy.props.BoolProperty(attr="infinite")
+bpy.types.Lamp.spot_soft_shadows = bpy.props.BoolProperty(attr="spot_soft_shadows")
+bpy.types.Lamp.shadow_fuzzyness = bpy.props.FloatProperty(attr="shadow_fuzzyness", default = 1.0)
+bpy.types.Lamp.photon_only = bpy.props.BoolProperty(attr="photon_only")
+bpy.types.Lamp.angle = bpy.props.IntProperty(attr="angle",
 		max = 80,
 		min = 0)
-StringProperty(attr="ies_file",subtype = 'FILE_PATH')
-IntProperty(attr="yaf_samples", default = 16)
-FloatProperty(attr="ies_cone_angle", default = 10.0)
-BoolProperty(attr="ies_soft_shadows")
+bpy.types.Lamp.ies_file = bpy.props.StringProperty(attr="ies_file",subtype = 'FILE_PATH')
+bpy.types.Lamp.yaf_samples = bpy.props.IntProperty(attr="yaf_samples", default = 16)
+bpy.types.Lamp.ies_cone_angle = bpy.props.FloatProperty(attr="ies_cone_angle", default = 10.0)
+bpy.types.Lamp.ies_soft_shadows = bpy.props.BoolProperty(attr="ies_soft_shadows")
 
 
 class YAF_PT_lamp(bpy.types.Panel):
@@ -45,7 +35,7 @@ class YAF_PT_lamp(bpy.types.Panel):
 	bl_context = 'data'
 	COMPAT_ENGINES =['YAFA_RENDER']
 
-
+	@classmethod
 	def poll(self, context):
 
 		engine = context.scene.render.engine
@@ -155,17 +145,11 @@ classes = [
 def register():
 	YAF_PT_lamp.prepend( DATA_PT_preview.draw )
 	YAF_PT_lamp.prepend( DATA_PT_context_lamp.draw )
-	register = bpy.types.register
-	for cls in classes:
-		register(cls)
 
 
 def unregister():
 	bpy.types.YAF_PT_lamp.remove( DATA_PT_preview.draw )
 	bpy.types.YAF_PT_lamp.remove( DATA_PT_context_lamp.draw )
-	unregister = bpy.types.unregister
-	for cls in classes:
-		unregister(cls)
 
 
 if __name__ == "__main__":

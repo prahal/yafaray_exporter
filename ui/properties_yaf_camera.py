@@ -1,17 +1,7 @@
 import bpy
+from bpy.props import *
 
-
-FloatProperty = bpy.types.Camera.FloatProperty
-IntProperty = bpy.types.Camera.IntProperty
-BoolProperty = bpy.types.Camera.BoolProperty
-CollectionProperty = bpy.types.Camera.CollectionProperty
-EnumProperty = bpy.types.Camera.EnumProperty
-FloatVectorProperty = bpy.types.Camera.FloatVectorProperty
-StringProperty = bpy.types.Camera.StringProperty
-IntVectorProperty = bpy.types.Camera.IntVectorProperty
-
-
-EnumProperty(attr="camera_type",
+bpy.types.Camera.camera_type = bpy.props.EnumProperty(attr="camera_type",
 	items = (
 		("Yafaray Camera","Yafaray Camera",""),
 		("angular","angular",""),
@@ -19,10 +9,10 @@ EnumProperty(attr="camera_type",
 		("perspective","perspective",""),
 		("architect","architect",""),
 ),default="architect")
-FloatProperty(attr="max_angle")
-BoolProperty(attr="mirrored")
-BoolProperty(attr="circular")
-EnumProperty(attr="bokeh_type",
+bpy.types.Camera.max_angle = bpy.props.FloatProperty(attr="max_angle")
+bpy.types.Camera.mirrored = bpy.props.BoolProperty(attr="mirrored")
+bpy.types.Camera.circular = bpy.props.BoolProperty(attr="circular")
+bpy.types.Camera.bokeh_type = bpy.props.EnumProperty(attr="bokeh_type",
 	items = (
 		("Bokeh Type","Bokeh Type",""),
 		("Disk2","Disk2",""),
@@ -33,16 +23,16 @@ EnumProperty(attr="bokeh_type",
 		("Ring","Ring",""),
 		("Disk1","Disk1",""),
 ),default="Disk1")
-FloatProperty(attr="aperture")
-FloatProperty(attr="bokeh_rotation")
-EnumProperty(attr="bokeh_bias",
+bpy.types.Camera.aperture = bpy.props.FloatProperty(attr="aperture")
+bpy.types.Camera.bokeh_rotation = bpy.props.FloatProperty(attr="bokeh_rotation")
+bpy.types.Camera.bokeh_bias = bpy.props.EnumProperty(attr="bokeh_bias",
 	items = (
 		("Bokeh Bias","Bokeh Bias",""),
 		("Uniform","Uniform",""),
 		("Center","Center",""),
 		("Edge","Edge",""),
 ),default="Edge")
-FloatVectorProperty(attr="color_data",description = "Point Info", subtype = "XYZ", step = 10, precision = 3)
+bpy.types.Camera.color_data = bpy.props.FloatVectorProperty(attr="color_data",description = "Point Info", subtype = "XYZ", step = 10, precision = 3)
 
 
 class YAF_PT_camera(bpy.types.Panel):
@@ -53,7 +43,7 @@ class YAF_PT_camera(bpy.types.Panel):
 	bl_context = 'data'
 	COMPAT_ENGINES =['YAFA_RENDER']
 
-
+	@classmethod
 	def poll(self, context):
 
 		engine = context.scene.render.engine
@@ -143,17 +133,12 @@ classes = [
 
 def register():
 	#YAF_PT_camera.prepend( DATA_PT_context_camera.draw )
-	register = bpy.types.register
-	for cls in classes:
-		register(cls)
+	pass
 
 
 def unregister():
 	#bpy.types.YAF_PT_camera.remove( DATA_PT_context_camera.draw )
-	unregister = bpy.types.unregister
-	for cls in classes:
-		unregister(cls)
-
+	pass
 
 if __name__ == "__main__":
 	register()

@@ -1,17 +1,7 @@
 import bpy
+from bpy.props import *
 
-
-FloatProperty = bpy.types.World.FloatProperty
-IntProperty = bpy.types.World.IntProperty
-BoolProperty = bpy.types.World.BoolProperty
-CollectionProperty = bpy.types.World.CollectionProperty
-EnumProperty = bpy.types.World.EnumProperty
-FloatVectorProperty = bpy.types.World.FloatVectorProperty
-StringProperty = bpy.types.World.StringProperty
-IntVectorProperty = bpy.types.World.IntVectorProperty
-
-
-EnumProperty(attr="bg_type",
+bpy.types.World.bg_type = bpy.props.EnumProperty(attr="bg_type",
 	items = (
 		("Yafaray Background","Yafaray Background",""),
 		("Gradient","Gradient",""),
@@ -20,31 +10,31 @@ EnumProperty(attr="bg_type",
 		("Darktide's Sunsky","Darktide's Sunsky",""),
 		("Single Color","Single Color",""),
 ),default="Single Color")
-FloatVectorProperty(attr="bg_zenith_ground_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
-BoolProperty(attr="bg_use_IBL")
-IntProperty(attr="bg_IBL_samples", default = 16)
-FloatProperty(attr="bg_rotation", default = 0.0)
-FloatProperty(attr="bg_turbidity", default = 3.0)
-FloatProperty(attr="bg_a_var", default = 1.0)
-FloatProperty(attr="bg_b_var", default = 1.0)
-FloatProperty(attr="bg_c_var", default = 1.0)
-FloatProperty(attr="bg_d_var", default = 1.0)
-FloatProperty(attr="bg_e_var", default = 1.0)
-FloatVectorProperty(attr="bg_from",description = "Point Info", subtype = "XYZ", step = 10, precision = 3)
-BoolProperty(attr="bg_add_sun")
-FloatProperty(attr="bg_sun_power", default = 1.0)
-BoolProperty(attr="bg_background_light")
-IntProperty(attr="bg_light_samples", default = 8)
-FloatProperty(attr="bg_dsaltitude", default = 0.0)
-BoolProperty(attr="bg_dsnight")
-FloatProperty(attr="bg_dsbright", default = 1.0)
-FloatProperty(attr="bg_power", default = 1.0)
+bpy.types.World.bg_zenith_ground_color = bpy.props.FloatVectorProperty(attr="bg_zenith_ground_color",description = "Color Settings", subtype = "COLOR", step = 1, precision = 2, min = 0.0, max = 1.0, soft_min = 0.0, soft_max = 1.0)
+bpy.types.World.bg_use_IBL = bpy.props.BoolProperty(attr="bg_use_IBL")
+bpy.types.World.bg_IBL_samples = bpy.props.IntProperty(attr="bg_IBL_samples", default = 16)
+bpy.types.World.bg_rotation = bpy.props.FloatProperty(attr="bg_rotation", default = 0.0)
+bpy.types.World.bg_turbidity = bpy.props.FloatProperty(attr="bg_turbidity", default = 3.0)
+bpy.types.World.bg_a_var = bpy.props.FloatProperty(attr="bg_a_var", default = 1.0)
+bpy.types.World.bg_b_var = bpy.props.FloatProperty(attr="bg_b_var", default = 1.0)
+bpy.types.World.bg_c_var = bpy.props.FloatProperty(attr="bg_c_var", default = 1.0)
+bpy.types.World.bg_d_var = bpy.props.FloatProperty(attr="bg_d_var", default = 1.0)
+bpy.types.World.bg_e_var = bpy.props.FloatProperty(attr="bg_e_var", default = 1.0)
+bpy.types.World.bg_from = bpy.props.FloatVectorProperty(attr="bg_from",description = "Point Info", subtype = "XYZ", step = 10, precision = 3)
+bpy.types.World.bg_add_sun = bpy.props.BoolProperty(attr="bg_add_sun")
+bpy.types.World.bg_sun_power = bpy.props.FloatProperty(attr="bg_sun_power", default = 1.0)
+bpy.types.World.bg_background_light = bpy.props.BoolProperty(attr="bg_background_light")
+bpy.types.World.bg_light_samples = bpy.props.IntProperty(attr="bg_light_samples", default = 8)
+bpy.types.World.bg_dsaltitude = bpy.props.FloatProperty(attr="bg_dsaltitude", default = 0.0)
+bpy.types.World.bg_dsnight = bpy.props.BoolProperty(attr="bg_dsnight")
+bpy.types.World.bg_dsbright = bpy.props.FloatProperty(attr="bg_dsbright", default = 1.0)
+bpy.types.World.bg_power = bpy.props.FloatProperty(attr="bg_power", default = 1.0)
 
-FloatProperty(attr="bg_exposure", default = 1.0)
-BoolProperty(attr="bg_clamp_rgb")
-BoolProperty(attr="bg_gamma_enc", default = True)
+bpy.types.World.bg_exposure = bpy.props.FloatProperty(attr="bg_exposure", default = 1.0)
+bpy.types.World.bg_clamp_rgb = bpy.props.BoolProperty(attr="bg_clamp_rgb")
+bpy.types.World.bg_gamma_enc = bpy.props.BoolProperty(attr="bg_gamma_enc", default = True)
 
-BoolProperty(attr="use_image", default = False)
+bpy.types.World.use_image = bpy.props.BoolProperty(attr="use_image", default = False)
 
 
 class YAF_PT_world(bpy.types.Panel):
@@ -55,7 +45,7 @@ class YAF_PT_world(bpy.types.Panel):
 	bl_context = 'world'
 	COMPAT_ENGINES =['YAFA_RENDER']
 
-
+	@classmethod
 	def poll(self, context):
 
 		engine = context.scene.render.engine
@@ -188,18 +178,10 @@ classes = [
 def register():
 	YAF_PT_world.prepend( WORLD_PT_preview.draw )
 	YAF_PT_world.prepend( WORLD_PT_context_world.draw )
-	register = bpy.types.register
-	for cls in classes:
-		register(cls)
-
 
 def unregister():
 	bpy.types.YAF_PT_world.remove( WORLD_PT_preview.draw )
 	bpy.types.YAF_PT_world.remove( WORLD_PT_context_world.draw )
-	unregister = bpy.types.unregister
-	for cls in classes:
-		unregister(cls)
-
 
 if __name__ == "__main__":
 	register()

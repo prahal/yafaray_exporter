@@ -11,13 +11,9 @@ classes = [
     ]
 
 def register():
-    register = bpy.types.register
-    for cls in classes:
-        register(cls)
+    pass
 
 def unregister():    
-    unregister = bpy.types.unregister
-    for cls in classes:
-        unregister(cls)
+    pass
 
 #yaf_properties.yaf_register_camera_types()

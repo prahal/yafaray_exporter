@@ -19,19 +19,9 @@
 # <pep8 compliant>
 import bpy
 from rna_prop_ui import PropertyPanel
+from bpy.props import *
 
-narrowui = bpy.context.user_preferences.view.properties_width_check
-
-FloatProperty = bpy.types.Texture.FloatProperty
-IntProperty = bpy.types.Texture.IntProperty
-BoolProperty = bpy.types.Texture.BoolProperty
-CollectionProperty = bpy.types.Texture.CollectionProperty
-EnumProperty = bpy.types.Texture.EnumProperty
-FloatVectorProperty = bpy.types.Texture.FloatVectorProperty
-StringProperty = bpy.types.Texture.StringProperty
-IntVectorProperty = bpy.types.Texture.IntVectorProperty
-
-EnumProperty(attr="yaf_tex_type",
+bpy.types.Texture.yaf_tex_type = bpy.props.EnumProperty(attr="yaf_tex_type",
         items = (
                 ("TEXTURE_TYPE","Texture Type",""),
                 ("NONE","None",""),
@@ -45,7 +35,7 @@ EnumProperty(attr="yaf_tex_type",
                 ("IMAGE","Image",""),
 ),default="NONE")
 
-EnumProperty(attr="yaf_texture_coordinates",
+bpy.types.Texture.yaf_texture_coordinates = bpy.props.EnumProperty(attr="yaf_texture_coordinates",
         items = (
                 ("TEXTURE_COORDINATES","Texture Co-Ordinates",""),
                 ("GLOBAL","Global",""),
@@ -59,7 +49,7 @@ EnumProperty(attr="yaf_texture_coordinates",
                 ("OBJECT","Object",""),
 ),default="GLOBAL")
 
-StringProperty(attr='tex_file_name', subtype = 'FILE_PATH')
+bpy.types.Texture.tex_file_name = bpy.props.StringProperty(attr='tex_file_name', subtype = 'FILE_PATH')
 
 
 from properties_material import active_node_mat
@@ -81,11 +71,12 @@ def context_tex_datablock(context):
     idblock = context.brush
     return idblock
 
-class YAF_TextureButtonsPanel(bpy.types.Panel):
+class YAF_TextureButtonsPanel():
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "texture"
 
+    @classmethod
     def poll(self, context):
         tex = context.texture
         if not tex:
@@ -104,7 +95,7 @@ class YAF_TextureButtonsPanel(bpy.types.Panel):
         return var
 
 
-class YAF_TEXTURE_PT_preview(YAF_TextureButtonsPanel):
+class YAF_TEXTURE_PT_preview(YAF_TextureButtonsPanel, bpy.types.Panel):
     bl_label = "Preview"
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
@@ -121,12 +112,13 @@ class YAF_TEXTURE_PT_preview(YAF_TextureButtonsPanel):
             layout.template_preview(tex, slot=slot)
 
 
-class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
+class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel, bpy.types.Panel):
     bl_label = ""
     bl_show_header = False
     COMPAT_ENGINES = {'YAFA_RENDER'}
     count = 0
 
+    @classmethod
     def poll(self, context):
         engine = context.scene.render.engine
         if not hasattr(context, "texture_slot"):
@@ -150,7 +142,6 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
         node = context.texture_node
         space = context.space_data
         tex = context.texture
-        wide_ui = context.region.width > narrowui
         idblock = context_tex_datablock(context)
         tex_collection = space.pin_id == None and type(idblock) != bpy.types.Brush and not node
 
@@ -164,11 +155,8 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
             #col.operator("texture.slot_move", text="", icon='TRIA_DOWN').type = 'DOWN'
             #col.menu("TEXTURE_MT_specials", icon='DOWNARROW_HLT', text="")
 
-        if wide_ui:
-            split = layout.split(percentage=0.65)
-            col = split.column()
-        else:
-            col = layout.column()
+        split = layout.split(percentage=0.65)
+        col = split.column()
 
         if tex_collection:
             col.template_ID(idblock, "active_texture", new="texture.new")
@@ -180,8 +168,7 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
         if space.pin_id:
             col.template_ID(space, "pin_id")
 
-        if wide_ui:
-            col = split.column()
+        col = split.column()
 
         #if not space.pin_id:
         #    col.prop(space, "brush_texture", text="Brush", toggle=True)
@@ -196,13 +183,9 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
                     split.prop(slot, "output_node", text="")
 
             else:
-                if wide_ui:
-                    split.label(text="Type:")
-                    split.prop(tex, "yaf_tex_type", text="")
-                    #tex.type = tex.yaf_tex_type
-                else:
-                    layout.prop(tex, "yaf_tex_type", text="")
-                    #tex.type = tex.yaf_tex_type
+                split.label(text="Type:")
+                split.prop(tex, "yaf_tex_type", text="")
+                #tex.type = tex.yaf_tex_type
         
 
 
@@ -245,6 +228,7 @@ class YAF_TEXTURE_PT_context_texture(YAF_TextureButtonsPanel):
 class YAF_TextureSlotPanel(YAF_TextureButtonsPanel):
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
+    @classmethod
     def poll(self, context):
         if not hasattr(context, "texture_slot"):
             return False
@@ -253,10 +237,11 @@ class YAF_TextureSlotPanel(YAF_TextureButtonsPanel):
         return TextureButtonsPanel.poll(self, context) and (engine in self.COMPAT_ENGINES)
 
 
-class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
+class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel, bpy.types.Panel):
     bl_label = "YafaRay Mapping (Map Input)"
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
+    @classmethod
     def poll(self, context):
         idblock = context_tex_datablock(context)
         if type(idblock) == bpy.types.Brush and not context.sculpt_object:
@@ -275,7 +260,6 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
 
         tex = context.texture_slot
         # textype = context.texture
-        wide_ui = context.region.width > narrowui
 
         if type(idblock) != bpy.types.Brush:
             split = layout.split(percentage=0.3)
@@ -329,11 +313,10 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
                     col.prop(tex, "from_dupli")
                 elif texture.yaf_texture_coordinates == 'OBJECT':
                     col.prop(tex, "from_original")
-                elif wide_ui:
+                else:
                     col.label()
 
-                if wide_ui:
-                    col = split.column()
+                col = split.column()
                 row = col.row()
                 row.prop(tex, "x_mapping", text="")
                 row.prop(tex, "y_mapping", text="")
@@ -344,18 +327,16 @@ class YAF_TEXTURE_PT_mapping(YAF_TextureSlotPanel):
         col = split.column()
         col.prop(tex, "offset")
 
-        if wide_ui:
-            col = split.column()
-        else:
-            col.separator()
+        col = split.column()
 
         col.prop(tex, "size")
 
 
-class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel):
+class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel, bpy.types.Panel):
     bl_label = "YafaRay Influence (Map To)"
     COMPAT_ENGINES = {'YAFA_RENDER'}
 
+    @classmethod
     def poll(self, context):
         idblock = context_tex_datablock(context)
         if type(idblock) == bpy.types.Brush:
@@ -375,7 +356,6 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel):
 
         # textype = context.texture
         tex = context.texture_slot
-        wide_ui = context.region.width > narrowui
 
         def factor_but(layout, active, toggle, factor, name):
             row = layout.row(align=True)
@@ -496,6 +476,8 @@ class YAF_TEXTURE_PT_influence(YAF_TextureSlotPanel):
 
 class YAF_TextureTypePanel(YAF_TextureButtonsPanel):
     COMPAT_ENGINES = {'YAFA_RENDER'}
+
+    @classmethod
     def poll(self, context):
         tex = context.texture
         engine = context.scene.render.engine
@@ -507,7 +489,7 @@ class YAF_TextureTypePanel(YAF_TextureButtonsPanel):
         return var
 
 
-class YAF_TEXTURE_PT_clouds(YAF_TextureTypePanel):
+class YAF_TEXTURE_PT_clouds(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Clouds"
     tex_type = 'CLOUDS'
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -517,8 +499,6 @@ class YAF_TEXTURE_PT_clouds(YAF_TextureTypePanel):
 
         tex = context.texture
         
-        wide_ui = context.region.width > narrowui
-
         #layout.prop(tex, "stype", expand=True)
         layout.label(text="Noise:")
         layout.prop(tex, "noise_type", text="Type", expand=True)
@@ -538,7 +518,7 @@ class YAF_TEXTURE_PT_clouds(YAF_TextureTypePanel):
         #col.prop(tex, "nabla", text="Nabla")
 
 
-class YAF_TEXTURE_PT_wood(YAF_TextureTypePanel):
+class YAF_TEXTURE_PT_wood(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Wood"
     tex_type = 'WOOD'
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -547,22 +527,15 @@ class YAF_TEXTURE_PT_wood(YAF_TextureTypePanel):
         layout = self.layout
 
         tex = context.texture
-        wide_ui = context.region.width > narrowui
 
         layout.prop(tex, "noisebasis2", expand=True)
-        if wide_ui:
-            layout.prop(tex, "stype", expand=True)
-        else:
-            layout.prop(tex, "stype", text="")
+        layout.prop(tex, "stype", expand=True)
 
         col = layout.column()
         col.active = tex.stype in ('RINGNOISE', 'BANDNOISE')
         col.label(text="Noise:")
         col.row().prop(tex, "noise_type", text="Type", expand=True)
-        if wide_ui:
-            layout.prop(tex, "noise_basis", text="Basis")
-        else:
-            layout.prop(tex, "noise_basis", text="")
+        layout.prop(tex, "noise_basis", text="Basis")
 
         split = layout.split()
         split.active = tex.stype in ('RINGNOISE', 'BANDNOISE')
@@ -575,7 +548,7 @@ class YAF_TEXTURE_PT_wood(YAF_TextureTypePanel):
         #col.prop(tex, "nabla")
 
 
-class YAF_TEXTURE_PT_marble(YAF_TextureTypePanel):
+class YAF_TEXTURE_PT_marble(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Marble"
     tex_type = 'MARBLE'
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -584,16 +557,12 @@ class YAF_TEXTURE_PT_marble(YAF_TextureTypePanel):
         layout = self.layout
 
         tex = context.texture
-        wide_ui = context.region.width > narrowui
 
         layout.prop(tex, "stype", expand=True)
         layout.prop(tex, "noisebasis2", expand=True)
         layout.label(text="Noise:")
         layout.prop(tex, "noise_type", text="Type", expand=True)
-        if wide_ui:
-            layout.prop(tex, "noise_basis", text="Basis")
-        else:
-            layout.prop(tex, "noise_basis", text="")
+        layout.prop(tex, "noise_basis", text="Basis")
 
         split = layout.split()
 
@@ -601,12 +570,11 @@ class YAF_TEXTURE_PT_marble(YAF_TextureTypePanel):
         col.prop(tex, "noise_size", text="Size")
         col.prop(tex, "noise_depth", text="Depth")
 
-        if wide_ui:
-            col = split.column()
+        col = split.column()
         col.prop(tex, "turbulence")
         #col.prop(tex, "nabla")
 
-class YAF_TEXTURE_PT_blend(YAF_TextureTypePanel):
+class YAF_TEXTURE_PT_blend(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Blend"
     tex_type = 'BLEND'
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -615,12 +583,8 @@ class YAF_TEXTURE_PT_blend(YAF_TextureTypePanel):
         layout = self.layout
 
         tex = context.texture
-        wide_ui = context.region.width > narrowui
 
-        if wide_ui:
-            layout.prop(tex, "progression")
-        else:
-            layout.prop(tex, "progression", text="")
+        layout.prop(tex, "progression")
         #
         #sub = layout.row()
         #
@@ -629,7 +593,7 @@ class YAF_TEXTURE_PT_blend(YAF_TextureTypePanel):
 
 
 
-class YAF_TEXTURE_PT_image(YAF_TextureTypePanel):
+class YAF_TEXTURE_PT_image(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Map Image"
     tex_type = 'IMAGE'
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -656,7 +620,7 @@ def texture_filter_common(tex, layout):
     layout.prop(tex, "filter_size_minimum")
 
 
-class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel):
+class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Image Sampling"
     bl_default_closed = True
     tex_type = 'IMAGE'
@@ -667,7 +631,6 @@ class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel):
 
         tex = context.texture
         # slot = context.texture_slot
-        wide_ui = context.region.width > narrowui
 
         split = layout.split()
 
@@ -697,7 +660,7 @@ class YAF_TEXTURE_PT_image_sampling(YAF_TextureTypePanel):
         #texture_filter_common(tex, col)
 
 
-class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel):
+class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Image Mapping"
     bl_default_closed = True
     tex_type = 'IMAGE'
@@ -707,12 +670,8 @@ class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel):
         layout = self.layout
 
         tex = context.texture
-        wide_ui = context.region.width > narrowui
 
-        if wide_ui:
-            layout.prop(tex, "extension")
-        else:
-            layout.prop(tex, "extension", text="")
+        layout.prop(tex, "extension")
 
         split = layout.split()
 
@@ -749,14 +708,13 @@ class YAF_TEXTURE_PT_image_mapping(YAF_TextureTypePanel):
         col.prop(tex, "crop_min_x", text="X")
         col.prop(tex, "crop_min_y", text="Y")
 
-        if wide_ui:
-            col = split.column(align=True)
+        col = split.column(align=True)
         col.label(text="Crop Maximum:")
         col.prop(tex, "crop_max_x", text="X")
         col.prop(tex, "crop_max_y", text="Y")
 
 
-class YAF_TEXTURE_PT_musgrave(YAF_TextureTypePanel):
+class YAF_TEXTURE_PT_musgrave(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Musgrave"
     tex_type = 'MUSGRAVE'
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -765,12 +723,8 @@ class YAF_TEXTURE_PT_musgrave(YAF_TextureTypePanel):
         layout = self.layout
 
         tex = context.texture
-        wide_ui = context.region.width > narrowui
 
-        if wide_ui:
-            layout.prop(tex, "musgrave_type")
-        else:
-            layout.prop(tex, "musgrave_type", text="")
+        layout.prop(tex, "musgrave_type")
 
         split = layout.split()
 
@@ -779,8 +733,7 @@ class YAF_TEXTURE_PT_musgrave(YAF_TextureTypePanel):
         col.prop(tex, "lacunarity")
         col.prop(tex, "octaves")
 
-        if wide_ui:
-            col = split.column()
+        col = split.column()
         if (tex.musgrave_type in ('HETERO_TERRAIN', 'RIDGED_MULTIFRACTAL', 'HYBRID_MULTIFRACTAL')):
             col.prop(tex, "offset")
         if (tex.musgrave_type in ('RIDGED_MULTIFRACTAL', 'HYBRID_MULTIFRACTAL')):
@@ -789,22 +742,18 @@ class YAF_TEXTURE_PT_musgrave(YAF_TextureTypePanel):
 
         layout.label(text="Noise:")
 
-        if wide_ui:
-            layout.prop(tex, "noise_basis", text="Basis")
-        else:
-            layout.prop(tex, "noise_basis", text="")
+        layout.prop(tex, "noise_basis", text="Basis")
 
         split = layout.split()
 
         col = split.column()
         col.prop(tex, "noise_size", text="Size")
 
-        if wide_ui:
-            col = split.column()
+        col = split.column()
         col.prop(tex, "nabla")
 
 
-class YAF_TEXTURE_PT_voronoi(YAF_TextureTypePanel):
+class YAF_TEXTURE_PT_voronoi(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Voronoi"
     tex_type = 'VORONOI'
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -813,7 +762,6 @@ class YAF_TEXTURE_PT_voronoi(YAF_TextureTypePanel):
         layout = self.layout
 
         tex = context.texture
-        wide_ui = context.region.width > narrowui
 
         split = layout.split()
 
@@ -827,8 +775,7 @@ class YAF_TEXTURE_PT_voronoi(YAF_TextureTypePanel):
         col.prop(tex, "coloring", text="")
         col.prop(tex, "noise_intensity", text="Intensity")
 
-        if wide_ui:
-            col = split.column()
+        col = split.column()
         sub = col.column(align=True)
         sub.label(text="Feature Weights:")
         sub.prop(tex, "weight_1", text="1", slider=True)
@@ -848,7 +795,7 @@ class YAF_TEXTURE_PT_voronoi(YAF_TextureTypePanel):
         #col.prop(tex, "nabla")
 
 
-class YAF_TEXTURE_PT_distortednoise(YAF_TextureTypePanel):
+class YAF_TEXTURE_PT_distortednoise(YAF_TextureTypePanel, bpy.types.Panel):
     bl_label = "Distorted Noise"
     tex_type = 'DISTORTED_NOISE'
     COMPAT_ENGINES = {'YAFA_RENDER'}
@@ -857,14 +804,9 @@ class YAF_TEXTURE_PT_distortednoise(YAF_TextureTypePanel):
         layout = self.layout
 
         tex = context.texture
-        wide_ui = context.region.width > narrowui
 
-        if wide_ui:
-            layout.prop(tex, "noise_distortion")
-            layout.prop(tex, "noise_basis", text="Basis")
-        else:
-            layout.prop(tex, "noise_distortion", text="")
-            layout.prop(tex, "noise_basis", text="")
+        layout.prop(tex, "noise_distortion")
+        layout.prop(tex, "noise_basis", text="Basis")
 
         split = layout.split()
 
@@ -913,15 +855,10 @@ classes = [
 
 
 def register():
-    register = bpy.types.register
-    for cls in classes:
-        register(cls)
-
+    pass
 
 def unregister():
-    unregister = bpy.types.unregister
-    for cls in classes:
-        unregister(cls)
+    pass
 
 if __name__ == "__main__":
     register()

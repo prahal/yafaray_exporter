@@ -1,27 +1,17 @@
 import bpy
+from bpy.props import *
 
-
-FloatProperty = bpy.types.Scene.FloatProperty
-IntProperty = bpy.types.Scene.IntProperty
-BoolProperty = bpy.types.Scene.BoolProperty
-CollectionProperty = bpy.types.Scene.CollectionProperty
-EnumProperty = bpy.types.Scene.EnumProperty
-FloatVectorProperty = bpy.types.Scene.FloatVectorProperty
-StringProperty = bpy.types.Scene.StringProperty
-IntVectorProperty = bpy.types.Scene.IntVectorProperty
-
-
-IntProperty(attr="AA_min_samples",
+bpy.types.Scene.AA_min_samples = bpy.props.IntProperty(attr="AA_min_samples",
 		default = 1)
-IntProperty(attr="AA_inc_samples",
+bpy.types.Scene.AA_inc_samples = bpy.props.IntProperty(attr="AA_inc_samples",
 		default = 1)
-IntProperty(attr="AA_passes",
+bpy.types.Scene.AA_passes = bpy.props.IntProperty(attr="AA_passes",
 		default = 1)
-FloatProperty(attr="AA_threshold",
+bpy.types.Scene.AA_threshold = bpy.props.FloatProperty(attr="AA_threshold",
 		default = 0.05, precision = 4)
-FloatProperty(attr="AA_pixelwidth",
+bpy.types.Scene.AA_pixelwidth = bpy.props.FloatProperty(attr="AA_pixelwidth",
 		default = 1.5)
-EnumProperty(attr="AA_filter_type",
+bpy.types.Scene.AA_filter_type = bpy.props.EnumProperty(attr="AA_filter_type",
 	items = (
 		("AA Filter Type","AA Filter Type",""),
 		("Box","Box",""),
@@ -38,7 +28,7 @@ class YAF_PT_AA_settings(bpy.types.Panel):
 	bl_context = 'render'
 	COMPAT_ENGINES =['YAFA_RENDER']
 
-
+	@classmethod
 	def poll(self, context):
 
 		engine = context.scene.render.engine
@@ -71,16 +61,10 @@ classes = [
 ]
 
 def register():
-	register = bpy.types.register
-	for cls in classes:
-		register(cls)
-
+	pass
 
 def unregister():
-	unregister = bpy.types.unregister
-	for cls in classes:
-		unregister(cls)
-
+	pass
 
 if __name__ == "__main__":
 	register()

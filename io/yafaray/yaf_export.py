@@ -139,7 +139,8 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
         
         if scene.name != 'preview':
             
-            scene.set_frame(scene.frame_current)
+            #scene.set_frame(scene.frame_current)
+            scene.update()
             self.scene = scene
         
             r = scene.render
@@ -152,7 +153,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.setInterface(yafrayinterface.yafrayInterface_t())
                         
             
-            outputFile,output,file_type = self.decideOutputFileName(r.output_path, r.file_format)
+            outputFile,output,file_type = self.decideOutputFileName(r.filepath, r.file_format)
                         
             self.yi.paramsClearAll()
             self.yi.paramsSetString("type", file_type)
@@ -162,7 +163,7 @@ class YafaRayRenderEngine(bpy.types.RenderEngine):
             self.yi.paramsSetBool("z_channel", scene.gs_z_channel)
                         
             ih = self.yi.createImageHandler("outFile")
-            co = yafrayinterface.imageOutput_t(ih, outputFile)
+            co = yafrayinterface.imageOutput_t(ih, outputFile, 0, 0)
                         
             self.yi.printInfo("Exporter: Rendering to file " + outputFile)
                 

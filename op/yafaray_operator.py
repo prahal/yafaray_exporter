@@ -106,11 +106,7 @@ def sunPosAngle(mode="get", val="position"):
 
 
 def register():
-    bpy.types.register(OBJECT_OT_get_position)
-    bpy.types.register(OBJECT_OT_get_angle)
-    bpy.types.register(OBJECT_OT_update_sun)
+    pass
 
 def unregister():
-    bpy.types.unregister(OBJECT_OT_get_position)
-    bpy.types.unregister(OBJECT_OT_get_angle)
-    bpy.types.unregister(OBJECT_OT_update_sun)
+    pass
